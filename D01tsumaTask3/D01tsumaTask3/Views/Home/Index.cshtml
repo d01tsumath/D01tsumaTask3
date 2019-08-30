@@ -1,13 +1,22 @@
-﻿@{
+﻿@using D01tsumaTask3.ViewModels.Home
+@model IndexViewModel
+
+@{
     ViewData["Title"] = "Index";
 }
 
 <h2>どいつまブログRSS5件抽出</h2>
 
 @{
-    foreach (var title in (List<Title>)ViewData["titles"])
+    foreach (var x in this.Model.Articles)
+    {
+        <div>
+            <a href="@x.Url" target="_blank">@x.Title</a>
+        </div>
+    }
+    /*foreach (var title in (List<Title>)ViewData["titles"])
     {
         <div><a href="@title.URL" target="_blank">@title.Name</a></div>
 
-    }
+    }*/
 }
