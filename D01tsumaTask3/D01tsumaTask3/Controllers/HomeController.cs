@@ -1,18 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using D01tsumaTask3.Models;
 using System.Xml.Linq;
-using System.Text.RegularExpressions;
+using D01tsumaTask3.Models;
+using D01tsumaTask3.ViewModels.Home;
+using Microsoft.AspNetCore.Mvc;
 
 namespace D01tsumaTask3.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        public async ValueTask<IActionResult> Index()
+        {
+            const string rssEndpoint = "http://d01tsumath.hatenablog.com/rss";
+
+            var client = new HttpClient();
+            var response = await client.GetAsync(rssEndpoint);
+            var rssFeed = await response.Content.ReadAsStringAsync();
+
+            var articles
+                = XElement.Parse(rssFeed)
+                    .Descendants("item")
+                    .Select(x =>
+                    {
+                        var title = x.Element("title").Value;
+                        var url = x.Element("link").Value;
+                        return new Article(title, url);
+                    })
+                    .Take(5)
+                    .ToArray();
+
+            return this.View();
+        }
+
+        /*public IActionResult Index()
         {
             string url = @"http://d01tsumath.hatenablog.com/rss";
 
@@ -51,7 +73,7 @@ namespace D01tsumaTask3.Controllers
             }
 
             return View();
-        }
+        }*/
 
         public IActionResult About()
         {
